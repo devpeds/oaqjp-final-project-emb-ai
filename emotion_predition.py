@@ -1,4 +1,5 @@
 import requests
+import json
 
 def emotion_detector(text_to_analyze):
     res = requests.post(
@@ -7,4 +8,19 @@ def emotion_detector(text_to_analyze):
         json={'raw_document': {'text': text_to_analyze}}
     )
 
-    return res.text
+    formatted_res = json.loads(res.text)
+    predictions = formatted_res['emotionPredictions']
+    if not predictions:
+        raise Exception('emotion predictions is empty')
+
+    emotion = predictions[0]['emotion']
+    results = {
+        'anger': emotion['anger'],
+        'disgust': emotion['disgust'],
+        'fear': emotion['fear'],
+        'joy': emotion['joy'],
+        'sadness': emotion['sadness']
+    }
+    results['dominent_emotion'] = max(results, key=results.get)
+
+    return results
