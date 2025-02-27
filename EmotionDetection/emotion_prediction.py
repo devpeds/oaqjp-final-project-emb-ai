@@ -8,6 +8,11 @@ def emotion_detector(text_to_analyze):
         json={'raw_document': {'text': text_to_analyze}}
     )
 
+    if res.status_code == 400:
+        return {}
+    elif res.status_code != 200:
+        raise Exception(f'unhandled response. {res.status_code}')
+
     formatted_res = json.loads(res.text)
     predictions = formatted_res['emotionPredictions']
     if not predictions:
